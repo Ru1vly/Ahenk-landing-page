@@ -1,26 +1,87 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --deep-black: #080808;
+  --stark-white: #e0e0e0;
+  --glowing-red: #ff3333;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "IBM Plex Mono", monospace;
+  background-color: var(--deep-black);
+  color: var(--stark-white);
+  overflow: hidden;
+  position: relative;
+}
+
+.font-headline {
+  font-family: "Oswald", sans-serif;
+}
+
+.font-code {
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.surveillance-grid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  background-image: linear-gradient(
+      to right,
+      rgba(224, 224, 224, 0.05) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(224, 224, 224, 0.05) 1px,
+      transparent 1px
+    );
+  background-size: 60px 60px;
+}
+
+.scanlines::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 1px,
+    rgba(0, 0, 0, 0.1) 1px,
+    rgba(0, 0, 0, 0.1) 2px
+  );
+  pointer-events: none;
+  opacity: 0.3;
+  z-index: 20;
+}
+
+.grainy-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEVHcEwmJibT09PY2Nje3t7g4ODi4uLl5eXn5+fq6urr6+vs7Ozt7e3u7u7v7+/w8PDx8fHy8vLz8/P09PT19fX29vb39/f4+Pj5+fn6+vr7+/v8/Pz9/f3+/v7////iH/WDAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH5gEcDQg33tL4QAAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAdSURBVEjH7dBLCgAwCAPB/Q+WzQh8G956Q4gG81W9l/cBYeR5Lz018QAAAABJRU5ErkJggg==");
+  background-repeat: repeat;
+  opacity: 0.05;
+}
+
+.blinking-cursor {
+  font-weight: 700;
+  animation: blinker 1s steps(1) infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
 }
