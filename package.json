@@ -1,6 +1,7 @@
 {
   "name": "ahenk-landing-page",
   "version": "0.1.0",
+  "description": "Landing page for Ahenk - Rust library for cross-platform P2P database synchronization with CRDT conflict resolution",
   "private": true,
   "scripts": {
     "dev": "next dev",

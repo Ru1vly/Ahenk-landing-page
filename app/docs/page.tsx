@@ -1,0 +1,331 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Header from "../components/header";
+import Footer from "../components/footer";
+
+interface DocSection {
+  id: string;
+  title: string;
+  url: string;
+}
+
+const docSections: DocSection[] = [
+  { id: "overview", title: "Overview", url: "https://raw.githubusercontent.com/Ru1vly/nexus-core/main/README.md" },
+  { id: "cli", title: "CLI Usage", url: "https://raw.githubusercontent.com/Ru1vly/nexus-core/main/docs/CLI_USAGE.md" },
+  { id: "migrations", title: "Database Migrations", url: "https://raw.githubusercontent.com/Ru1vly/nexus-core/main/docs/DATABASE_MIGRATIONS.md" },
+  { id: "quick-start", title: "Migration Quick Start", url: "https://raw.githubusercontent.com/Ru1vly/nexus-core/main/docs/MIGRATION_QUICK_START.md" },
+];
+
+export default function DocsPage() {
+  const [activeSection, setActiveSection] = useState("overview");
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    const fetchDocs = async () => {
+      setLoading(true);
+      const section = docSections.find(s => s.id === activeSection);
+      if (section) {
+        try {
+          const response = await fetch(section.url);
+          const text = await response.text();
+          setContent(text);
+        } catch (error) {
+          setContent("Error loading documentation. Please try again later.");
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchDocs();
+  }, [activeSection]);
+
+  const renderMarkdown = (markdown: string) => {
+    // Simple markdown rendering - converts to HTML
+    const lines = markdown.split('\n');
+    const html: JSX.Element[] = [];
+    let inCodeBlock = false;
+    let codeBlockContent: string[] = [];
+    let codeBlockLang = '';
+
+    lines.forEach((line, index) => {
+      // Code blocks
+      if (line.startsWith('```')) {
+        if (!inCodeBlock) {
+          inCodeBlock = true;
+          codeBlockLang = line.replace('```', '');
+          codeBlockContent = [];
+        } else {
+          inCodeBlock = false;
+          html.push(
+            <pre key={`code-${index}`} className="bg-background-dark border border-primary/30 p-4 rounded-sm overflow-x-auto my-4">
+              <code className="font-code text-sm text-text-light">{codeBlockContent.join('\n')}</code>
+            </pre>
+          );
+          codeBlockContent = [];
+        }
+        return;
+      }
+
+      if (inCodeBlock) {
+        codeBlockContent.push(line);
+        return;
+      }
+
+      // Headers
+      if (line.startsWith('### ')) {
+        html.push(<h3 key={index} className="text-primary text-xl font-headline uppercase mt-6 mb-3">{line.replace('### ', '')}</h3>);
+      } else if (line.startsWith('## ')) {
+        html.push(<h2 key={index} className="text-primary text-2xl font-headline uppercase mt-8 mb-4 border-b border-primary/30 pb-2">{line.replace('## ', '')}</h2>);
+      } else if (line.startsWith('# ')) {
+        html.push(<h1 key={index} className="text-primary text-3xl font-headline uppercase mt-4 mb-6">{line.replace('# ', '')}</h1>);
+      }
+      // Lists
+      else if (line.startsWith('- ') || line.startsWith('* ')) {
+        const content = line.replace(/^[*-] /, '');
+        html.push(
+          <li key={index} className="text-text-light ml-6 mb-2 list-disc">
+            <span dangerouslySetInnerHTML={{ __html: content.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary">$1</strong>').replace(/`(.*?)`/g, '<code class="bg-primary/10 text-primary px-1 font-code text-sm">$1</code>') }} />
+          </li>
+        );
+      }
+      // Numbered lists
+      else if (/^\d+\. /.test(line)) {
+        const content = line.replace(/^\d+\. /, '');
+        html.push(
+          <li key={index} className="text-text-light ml-6 mb-2 list-decimal">
+            <span dangerouslySetInnerHTML={{ __html: content.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary">$1</strong>').replace(/`(.*?)`/g, '<code class="bg-primary/10 text-primary px-1 font-code text-sm">$1</code>') }} />
+          </li>
+        );
+      }
+      // Inline code
+      else if (line.includes('`')) {
+        const formatted = line.replace(/`(.*?)`/g, '<code class="bg-primary/10 text-primary px-1 font-code text-sm">$1</code>');
+        html.push(<p key={index} className="text-text-light mb-3" dangerouslySetInnerHTML={{ __html: formatted }} />);
+      }
+      // Bold text
+      else if (line.includes('**')) {
+        const formatted = line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary">$1</strong>');
+        html.push(<p key={index} className="text-text-light mb-3" dangerouslySetInnerHTML={{ __html: formatted }} />);
+      }
+      // Regular paragraphs
+      else if (line.trim()) {
+        html.push(<p key={index} className="text-text-light mb-3">{line}</p>);
+      }
+      // Empty lines
+      else {
+        html.push(<div key={index} className="h-2" />);
+      }
+    });
+
+    return html;
+  };
+
+  return (
+    <div className="min-h-screen bg-background-dark text-text-light overflow-hidden">
+      {/* Background decorations */}
+      <div className="surveillance-grid-overlay"></div>
+      <div className="scanlines fixed inset-0 z-20 pointer-events-none"></div>
+      <div className="grainy-overlay"></div>
+
+      {/* Extra grid overlay with different color */}
+      <div className="fixed inset-0 opacity-5 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#40e0d0_1px,transparent_1px),linear-gradient(to_bottom,#40e0d0_1px,transparent_1px)] bg-[size:40px_40px]" />
+      </div>
+
+      {/* Floating particles */}
+      <div className="fixed inset-0 pointer-events-none z-10 overflow-hidden">
+        <div className="absolute top-20 left-10 w-1 h-1 bg-primary animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-1 h-1 bg-neon-pink animate-pulse" style={{animationDelay: '0.5s'}}></div>
+        <div className="absolute bottom-40 left-1/4 w-1 h-1 bg-primary animate-pulse" style={{animationDelay: '1s'}}></div>
+        <div className="absolute bottom-60 right-1/3 w-1 h-1 bg-neon-pink animate-pulse" style={{animationDelay: '1.5s'}}></div>
+        <div className="absolute top-1/3 left-1/2 w-1 h-1 bg-primary animate-pulse" style={{animationDelay: '0.7s'}}></div>
+        <div className="absolute top-2/3 right-1/4 w-1 h-1 bg-neon-pink animate-pulse" style={{animationDelay: '1.2s'}}></div>
+      </div>
+
+      {/* Animated corner accents - full screen */}
+      <div className="fixed top-0 left-0 w-20 h-20 border-l-4 border-t-4 border-primary/30 pointer-events-none z-10"></div>
+      <div className="fixed top-0 right-0 w-20 h-20 border-r-4 border-t-4 border-neon-pink/30 pointer-events-none z-10"></div>
+      <div className="fixed bottom-0 left-0 w-20 h-20 border-l-4 border-b-4 border-neon-pink/30 pointer-events-none z-10"></div>
+      <div className="fixed bottom-0 right-0 w-20 h-20 border-r-4 border-b-4 border-primary/30 pointer-events-none z-10"></div>
+
+      {/* Pulsing accent lines */}
+      <div className="fixed top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent pointer-events-none z-10 animate-pulse"></div>
+      <div className="fixed top-3/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-neon-pink/20 to-transparent pointer-events-none z-10 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+      <div className="fixed top-1/2 left-0 h-full w-px bg-gradient-to-b from-transparent via-primary/10 to-transparent pointer-events-none z-10 animate-pulse" style={{animationDelay: '1s'}}></div>
+
+      <Header />
+
+      <div className="pt-16 pb-12 px-4 relative z-30 min-h-screen">
+        <div className="max-w-7xl mx-auto flex gap-4 relative min-h-[calc(100vh-7rem)]">
+        {/* Mobile menu toggle */}
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="md:hidden fixed top-20 left-4 z-50 bg-background-dark border border-primary px-3 py-2 text-xs font-code uppercase text-primary hover:bg-primary/10 transition-colors"
+        >
+          {sidebarOpen ? "[CLOSE]" : "[MENU]"}
+        </button>
+
+        {/* Sidebar */}
+        <aside
+          className={`${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 fixed md:sticky top-16 left-0 md:left-auto h-[calc(100vh-8rem)] w-64 bg-background-dark/95 backdrop-blur-sm border border-primary/30 p-6 transition-transform duration-300 z-40 overflow-y-auto relative shadow-[0_0_30px_rgba(64,224,208,0.2)]`}
+        >
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-primary/5 to-transparent z-0 opacity-10 pointer-events-none"></div>
+
+          {/* Corner accents */}
+          <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-primary shadow-[0_0_8px_rgba(64,224,208,0.5)]"></div>
+          <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-neon-pink shadow-[0_0_8px_rgba(255,0,110,0.5)]"></div>
+          <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-neon-pink shadow-[0_0_8px_rgba(255,0,110,0.5)]"></div>
+          <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-primary shadow-[0_0_8px_rgba(64,224,208,0.5)]"></div>
+
+          <div className="relative z-10">
+            <div className="flex items-center gap-2 mb-4 border-b border-primary/30 pb-2 shadow-[0_2px_10px_rgba(64,224,208,0.1)]">
+              <div className="w-2 h-2 bg-primary animate-pulse rounded-full shadow-[0_0_8px_rgba(64,224,208,0.8)]"></div>
+              <h2 className="text-primary text-sm font-headline uppercase">
+                [NAVIGATION]
+              </h2>
+            </div>
+            <nav className="space-y-2">
+              {docSections.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => {
+                    setActiveSection(section.id);
+                    setSidebarOpen(false);
+                  }}
+                  className={`w-full text-left px-3 py-2 font-code text-sm uppercase transition-all duration-200 ${
+                    activeSection === section.id
+                      ? "bg-primary/20 text-primary border-l-2 border-primary shadow-[0_0_10px_rgba(64,224,208,0.3)]"
+                      : "text-text-light hover:bg-primary/10 hover:text-primary border-l-2 border-transparent hover:border-primary/50"
+                  }`}
+                >
+                  {section.title}
+                </button>
+              ))}
+            </nav>
+
+            <div className="mt-8 pt-8 border-t border-neon-pink/30 shadow-[0_-2px_10px_rgba(255,0,110,0.1)]">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-2 h-2 bg-neon-pink animate-pulse rounded-full shadow-[0_0_8px_rgba(255,0,110,0.8)]"></div>
+                <h3 className="text-neon-pink text-xs font-headline uppercase">
+                  [QUICK LINKS]
+                </h3>
+              </div>
+              <div className="space-y-2">
+                <a
+                  href="https://github.com/Ru1vly/nexus-core"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-secondary-accent hover:text-primary text-xs font-code transition-colors group"
+                >
+                  <span className="text-primary group-hover:translate-x-1 transition-transform">→</span>
+                  <span>GITHUB REPO</span>
+                </a>
+                <a
+                  href="https://github.com/Ru1vly/nexus-core/issues"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-secondary-accent hover:text-primary text-xs font-code transition-colors group"
+                >
+                  <span className="text-neon-pink group-hover:translate-x-1 transition-transform">→</span>
+                  <span>REPORT ISSUE</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main content */}
+        <main className="flex-1 relative z-10">
+          <div className="bg-background-dark/95 backdrop-blur-sm border border-secondary-accent/30 p-8 md:p-12 relative overflow-hidden min-h-[calc(100vh-7rem)] shadow-[0_0_40px_rgba(128,128,128,0.1)]">
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-tl from-transparent via-secondary-accent/5 to-transparent z-0 opacity-10 pointer-events-none"></div>
+
+            {/* Corner accents */}
+            <div className="absolute top-4 left-4 w-6 h-6 border-l-2 border-t-2 border-primary shadow-[0_0_10px_rgba(64,224,208,0.5)]"></div>
+            <div className="absolute top-4 right-4 w-6 h-6 border-r-2 border-t-2 border-neon-pink shadow-[0_0_10px_rgba(255,0,110,0.5)]"></div>
+            <div className="absolute bottom-4 left-4 w-6 h-6 border-l-2 border-b-2 border-neon-pink shadow-[0_0_10px_rgba(255,0,110,0.5)]"></div>
+            <div className="absolute bottom-4 right-4 w-6 h-6 border-r-2 border-b-2 border-primary shadow-[0_0_10px_rgba(64,224,208,0.5)]"></div>
+
+            {/* Inner corner accents */}
+            <div className="absolute top-12 left-12 w-3 h-3 border-l border-t border-primary/50"></div>
+            <div className="absolute top-12 right-12 w-3 h-3 border-r border-t border-neon-pink/50"></div>
+            <div className="absolute bottom-12 left-12 w-3 h-3 border-l border-b border-neon-pink/50"></div>
+            <div className="absolute bottom-12 right-12 w-3 h-3 border-r border-b border-primary/50"></div>
+
+            {/* Data stream effects */}
+            <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-primary/0 via-primary/20 to-primary/0 animate-pulse"></div>
+            <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-neon-pink/0 via-neon-pink/20 to-neon-pink/0 animate-pulse" style={{animationDelay: '0.7s'}}></div>
+
+            {/* Animated border segments */}
+            <div className="absolute top-0 left-20 w-16 h-px bg-gradient-to-r from-transparent via-primary to-transparent animate-pulse"></div>
+            <div className="absolute bottom-0 right-20 w-16 h-px bg-gradient-to-r from-transparent via-neon-pink to-transparent animate-pulse" style={{animationDelay: '0.5s'}}></div>
+
+            {/* Content header with status */}
+            <div className="relative z-10 flex items-center justify-between mb-6 pb-4 border-b border-primary/20 shadow-[0_2px_10px_rgba(64,224,208,0.1)]">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-primary animate-pulse rounded-full shadow-[0_0_8px_rgba(64,224,208,0.8)]"></div>
+                <h3 className="text-primary text-sm font-headline uppercase font-code">
+                  [DOCUMENTATION // {docSections.find(s => s.id === activeSection)?.title.toUpperCase()}]
+                </h3>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 text-xs font-code text-secondary-accent border border-neon-pink/30 px-2 py-1">
+                  <div className="w-2 h-2 bg-neon-pink animate-pulse rounded-full shadow-[0_0_8px_rgba(255,0,110,0.8)]" />
+                  <span>ONLINE</span>
+                </div>
+                <div className="hidden sm:flex items-center gap-2 text-xs font-code text-secondary-accent border border-primary/30 px-2 py-1">
+                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  <span>SECURE</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative z-10 max-w-4xl">
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-12 gap-4">
+                  <div className="flex items-center gap-3 text-primary">
+                    <div className="w-3 h-3 bg-primary animate-pulse rounded-full" />
+                    <div className="w-3 h-3 bg-primary animate-pulse rounded-full" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-3 h-3 bg-primary animate-pulse rounded-full" style={{ animationDelay: '0.4s' }}></div>
+                  </div>
+                  <span className="font-code text-sm uppercase text-primary">LOADING DOCUMENTATION...</span>
+                </div>
+              ) : (
+                <article className="prose prose-invert max-w-none">
+                  {renderMarkdown(content)}
+                </article>
+              )}
+            </div>
+
+            {/* Status indicator at bottom */}
+            <div className="relative z-10 mt-12 pt-6 border-t border-neon-pink/20 shadow-[0_-2px_10px_rgba(255,0,110,0.1)] flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-2 text-xs font-code text-secondary-accent border border-neon-pink/30 px-2 py-1">
+                <div className="w-2 h-2 bg-neon-pink animate-pulse rounded-full shadow-[0_0_8px_rgba(255,0,110,0.8)]" />
+                <span>SYNC STATUS: <span className="text-neon-pink">COMPLETE</span></span>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="text-xs font-code text-secondary-accent border border-primary/30 px-2 py-1">
+                  PEER COUNT: <span className="text-primary">42</span>
+                </div>
+                <div className="hidden sm:flex items-center gap-2 text-xs font-code text-secondary-accent border border-primary/30 px-2 py-1">
+                  <div className="w-2 h-2 bg-primary animate-pulse rounded-full shadow-[0_0_8px_rgba(64,224,208,0.8)]"></div>
+                  <span>LATENCY: <span className="text-primary">12ms</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+      </div>
+
+      <Footer />
+    </div>
+  );
+}

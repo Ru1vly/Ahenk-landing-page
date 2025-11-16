@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Harmonize - Sync Without Conflict",
+  title: "Ahenk - Sync Without Conflict | Rust P2P Database Sync",
+  description: "Batteries-included Rust library for cross-platform database synchronization. P2P networking with libp2p, CRDT conflict resolution, and offline-first architecture.",
 };
 
 export default function RootLayout({
@@ -28,7 +29,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body bg-background-dark text-text-light relative h-screen w-screen flex flex-col justify-between overflow-hidden">
+      <body className="font-body bg-background-dark text-text-light relative">
         {children}
       </body>
     </html>

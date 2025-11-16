@@ -12,15 +12,15 @@ const Header = () => {
           </svg>
         </div>
         <h2 className="text-text-light text-base font-bold tracking-widest font-headline uppercase">
-          <span className="blinking-cursor">[LIVE FEED]</span> //{" "}
-          <span className="text-primary">ACTIVE</span>
+          <span className="blinking-cursor">AHENK-CLI</span> //{" "}
+          <span className="text-primary">ONLINE</span>
         </h2>
       </div>
       <div className="flex items-center gap-4 text-xs font-code uppercase">
         <span className="hidden sm:inline">
-          UNIT: GAMMA-7 // STATUS: OPERATIONAL
+          PEER: AHENK-NODE // STATUS: SYNCHRONIZED
         </span>
-        <span className="text-primary">[ALERT]</span>
+        <span className="text-neon-pink border border-neon-pink px-2 py-1">[P2P]</span>
       </div>
     </header>
   );
