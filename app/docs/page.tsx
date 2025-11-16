@@ -22,7 +22,30 @@ export default function DocsPage() {
   const [activeSection, setActiveSection] = useState("overview");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(true);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+        if (scrollHeight > clientHeight) {
+            const progress = (scrollTop / (scrollHeight - clientHeight)) * 100;
+            setScrollProgress(progress);
+        } else {
+            setScrollProgress(100);
+        }
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [content]);
 
   useEffect(() => {
     const fetchDocs = async () => {
@@ -124,6 +147,77 @@ export default function DocsPage() {
     return html;
   };
 
+  const NavigationContent = () => (
+    <>
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-primary/5 to-transparent z-0 opacity-10 pointer-events-none"></div>
+
+      {/* Corner accents */}
+      <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-primary shadow-[0_0_8px_rgba(64,224,208,0.5)]"></div>
+      <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-neon-pink shadow-[0_0_8px_rgba(255,0,110,0.5)]"></div>
+      <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-neon-pink shadow-[0_0_8px_rgba(255,0,110,0.5)]"></div>
+      <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-primary shadow-[0_0_8px_rgba(64,224,208,0.5)]"></div>
+
+      <div className="relative z-10">
+        <div className="flex items-center gap-2 mb-4 border-b border-primary/30 pb-2 shadow-[0_2px_10px_rgba(64,224,208,0.1)]">
+          <div className="w-2 h-2 bg-primary animate-pulse rounded-full shadow-[0_0_8px_rgba(64,224,208,0.8)]"></div>
+          <h2 className="text-primary text-sm font-headline uppercase">
+            [NAVIGATION]
+          </h2>
+        </div>
+        <nav className="flex flex-wrap gap-2">
+          {docSections.map((section) => (
+            <button
+              key={section.id}
+              onClick={() => {
+                setActiveSection(section.id);
+                if (window.innerWidth < 1024) {
+                  setSidebarOpen(false);
+                }
+              }}
+              className={`flex-grow text-center px-3 py-2 font-code text-sm uppercase transition-all duration-200 border ${
+                activeSection === section.id
+                  ? "bg-primary/20 text-primary border-primary shadow-[0_0_10px_rgba(64,224,208,0.3)]"
+                  : "text-text-light bg-background-dark/50 hover:bg-primary/10 hover:text-primary border-primary/20 hover:border-primary/50"
+              }`}
+            >
+              {section.title}
+            </button>
+          ))}
+        </nav>
+
+        <div className="mt-6 pt-4 border-t border-neon-pink/30 shadow-[0_-2px_10px_rgba(255,0,110,0.1)]">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-2 h-2 bg-neon-pink animate-pulse rounded-full shadow-[0_0_8px_rgba(255,0,110,0.8)]"></div>
+            <h3 className="text-neon-pink text-xs font-headline uppercase">
+              [QUICK LINKS]
+            </h3>
+          </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <a
+              href="https://github.com/Ru1vly/nexus-core"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-secondary-accent hover:text-primary text-xs font-code transition-colors group"
+            >
+              <span className="text-primary group-hover:translate-x-1 transition-transform">→</span>
+              <span>GITHUB REPO</span>
+            </a>
+            <a
+              href="https://github.com/Ru1vly/nexus-core/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-secondary-accent hover:text-primary text-xs font-code transition-colors group"
+            >
+              <span className="text-neon-pink group-hover:translate-x-1 transition-transform">→</span>
+              <span>REPORT ISSUE</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <div className="min-h-screen bg-background-dark text-text-light overflow-hidden">
       {/* Background decorations */}
@@ -160,169 +254,162 @@ export default function DocsPage() {
       <Header />
 
       <div className="pt-16 pb-12 px-4 relative z-30 min-h-screen">
-        <div className="max-w-7xl mx-auto flex gap-4 relative min-h-[calc(100vh-7rem)]">
-        {/* Mobile menu toggle */}
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="md:hidden fixed top-20 left-4 z-50 bg-background-dark border border-primary px-3 py-2 text-xs font-code uppercase text-primary hover:bg-primary/10 transition-colors"
-        >
-          {sidebarOpen ? "[CLOSE]" : "[MENU]"}
-        </button>
-
-        {/* Sidebar */}
-        <aside
-          className={`${
-            sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } md:translate-x-0 fixed md:sticky top-16 left-0 md:left-auto h-[calc(100vh-8rem)] w-64 bg-background-dark/95 backdrop-blur-sm border border-primary/30 p-6 transition-transform duration-300 z-40 overflow-y-auto relative shadow-[0_0_30px_rgba(64,224,208,0.2)]`}
-        >
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-primary/5 to-transparent z-0 opacity-10 pointer-events-none"></div>
-
-          {/* Corner accents */}
-          <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-primary shadow-[0_0_8px_rgba(64,224,208,0.5)]"></div>
-          <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-neon-pink shadow-[0_0_8px_rgba(255,0,110,0.5)]"></div>
-          <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-neon-pink shadow-[0_0_8px_rgba(255,0,110,0.5)]"></div>
-          <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-primary shadow-[0_0_8px_rgba(64,224,208,0.5)]"></div>
-
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-4 border-b border-primary/30 pb-2 shadow-[0_2px_10px_rgba(64,224,208,0.1)]">
-              <div className="w-2 h-2 bg-primary animate-pulse rounded-full shadow-[0_0_8px_rgba(64,224,208,0.8)]"></div>
-              <h2 className="text-primary text-sm font-headline uppercase">
-                [NAVIGATION]
-              </h2>
-            </div>
-            <nav className="space-y-2">
-              {docSections.map((section) => (
-                <button
-                  key={section.id}
-                  onClick={() => {
-                    setActiveSection(section.id);
-                    setSidebarOpen(false);
-                  }}
-                  className={`w-full text-left px-3 py-2 font-code text-sm uppercase transition-all duration-200 ${
-                    activeSection === section.id
-                      ? "bg-primary/20 text-primary border-l-2 border-primary shadow-[0_0_10px_rgba(64,224,208,0.3)]"
-                      : "text-text-light hover:bg-primary/10 hover:text-primary border-l-2 border-transparent hover:border-primary/50"
-                  }`}
-                >
-                  {section.title}
-                </button>
-              ))}
-            </nav>
-
-            <div className="mt-8 pt-8 border-t border-neon-pink/30 shadow-[0_-2px_10px_rgba(255,0,110,0.1)]">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-2 h-2 bg-neon-pink animate-pulse rounded-full shadow-[0_0_8px_rgba(255,0,110,0.8)]"></div>
-                <h3 className="text-neon-pink text-xs font-headline uppercase">
-                  [QUICK LINKS]
-                </h3>
-              </div>
-              <div className="space-y-2">
-                <a
-                  href="https://github.com/Ru1vly/nexus-core"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-secondary-accent hover:text-primary text-xs font-code transition-colors group"
-                >
-                  <span className="text-primary group-hover:translate-x-1 transition-transform">→</span>
-                  <span>GITHUB REPO</span>
-                </a>
-                <a
-                  href="https://github.com/Ru1vly/nexus-core/issues"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-secondary-accent hover:text-primary text-xs font-code transition-colors group"
-                >
-                  <span className="text-neon-pink group-hover:translate-x-1 transition-transform">→</span>
-                  <span>REPORT ISSUE</span>
-                </a>
-              </div>
+        <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-8 relative min-h-[calc(100vh-7rem)]">
+          {/* --- LEFT SIDEBAR (Desktop) --- */}
+          <div className="hidden lg:flex flex-col gap-8 sticky top-16 h-fit">
+            <aside className="bg-background-dark/95 backdrop-blur-sm border border-primary/30 p-6 shadow-[0_0_30px_rgba(64,224,208,0.2)] rounded-lg relative">
+              <NavigationContent />
+            </aside>
+            {/* Back to Home Button */}
+            <Link href="/" className="block">
+                <div className="group relative bg-background-dark/95 backdrop-blur-sm border border-neon-pink/30 p-6 h-28 rounded-lg flex items-center justify-center text-center transition-all duration-300 hover:border-neon-pink hover:shadow-[0_0_20px_rgba(255,0,110,0.5)]">
+                    <div className="absolute top-1 left-1 w-3 h-3 border-l border-t border-neon-pink/50 group-hover:border-neon-pink"></div>
+                    <div className="absolute top-1 right-1 w-3 h-3 border-r border-t border-neon-pink/50 group-hover:border-neon-pink"></div>
+                    <div className="absolute bottom-1 left-1 w-3 h-3 border-l border-b border-neon-pink/50 group-hover:border-neon-pink"></div>
+                    <div className="absolute bottom-1 right-1 w-3 h-3 border-r border-b border-neon-pink/50 group-hover:border-neon-pink"></div>
+                    <span className="font-headline text-lg uppercase text-neon-pink transition-all duration-300 group-hover:text-white group-hover:tracking-widest">
+                        [ RETURN HOME ]
+                    </span>
+                </div>
+            </Link>
+            {/* Reading Progress Indicator */}
+            <div className="bg-background-dark/95 backdrop-blur-sm border border-primary/30 p-6 h-28 rounded-lg relative">
+                <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-primary"></div>
+                <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-primary"></div>
+                <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 bg-primary animate-pulse rounded-full"></div>
+                    <h3 className="text-primary text-sm font-headline uppercase">[READ_PROGRESS]</h3>
+                </div>
+                <div className="w-full bg-primary/10 border border-primary/20 h-4 mt-2">
+                    <div className="bg-primary h-full transition-all duration-200" style={{ width: `${scrollProgress}%` }}></div>
+                </div>
+                <p className="text-right font-code text-primary text-xl mt-2">{Math.round(scrollProgress)}%</p>
             </div>
           </div>
-        </aside>
 
-        {/* Main content */}
-        <main className="flex-1 relative z-10">
-          <div className="bg-background-dark/95 backdrop-blur-sm border border-secondary-accent/30 p-8 md:p-12 relative overflow-hidden min-h-[calc(100vh-7rem)] shadow-[0_0_40px_rgba(128,128,128,0.1)]">
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-tl from-transparent via-secondary-accent/5 to-transparent z-0 opacity-10 pointer-events-none"></div>
+          {/* --- MAIN CONTENT --- */}
+          <main className="relative z-10 lg:col-start-2">
+            <div className="bg-background-dark/95 backdrop-blur-sm border border-secondary-accent/30 p-8 md:p-12 relative overflow-hidden min-h-[calc(100vh-7rem)] shadow-[0_0_40px_rgba(128,128,128,0.1)]">
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-tl from-transparent via-secondary-accent/5 to-transparent z-0 opacity-10 pointer-events-none"></div>
 
-            {/* Corner accents */}
-            <div className="absolute top-4 left-4 w-6 h-6 border-l-2 border-t-2 border-primary shadow-[0_0_10px_rgba(64,224,208,0.5)]"></div>
-            <div className="absolute top-4 right-4 w-6 h-6 border-r-2 border-t-2 border-neon-pink shadow-[0_0_10px_rgba(255,0,110,0.5)]"></div>
-            <div className="absolute bottom-4 left-4 w-6 h-6 border-l-2 border-b-2 border-neon-pink shadow-[0_0_10px_rgba(255,0,110,0.5)]"></div>
-            <div className="absolute bottom-4 right-4 w-6 h-6 border-r-2 border-b-2 border-primary shadow-[0_0_10px_rgba(64,224,208,0.5)]"></div>
+              {/* Corner accents */}
+              <div className="absolute top-4 left-4 w-6 h-6 border-l-2 border-t-2 border-primary shadow-[0_0_10px_rgba(64,224,208,0.5)]"></div>
+              <div className="absolute top-4 right-4 w-6 h-6 border-r-2 border-t-2 border-neon-pink shadow-[0_0_10px_rgba(255,0,110,0.5)]"></div>
+              <div className="absolute bottom-4 left-4 w-6 h-6 border-l-2 border-b-2 border-neon-pink shadow-[0_0_10px_rgba(255,0,110,0.5)]"></div>
+              <div className="absolute bottom-4 right-4 w-6 h-6 border-r-2 border-b-2 border-primary shadow-[0_0_10px_rgba(64,224,208,0.5)]"></div>
 
-            {/* Inner corner accents */}
-            <div className="absolute top-12 left-12 w-3 h-3 border-l border-t border-primary/50"></div>
-            <div className="absolute top-12 right-12 w-3 h-3 border-r border-t border-neon-pink/50"></div>
-            <div className="absolute bottom-12 left-12 w-3 h-3 border-l border-b border-neon-pink/50"></div>
-            <div className="absolute bottom-12 right-12 w-3 h-3 border-r border-b border-primary/50"></div>
+              {/* Inner corner accents */}
+              <div className="absolute top-12 left-12 w-3 h-3 border-l border-t border-primary/50"></div>
+              <div className="absolute top-12 right-12 w-3 h-3 border-r border-t border-neon-pink/50"></div>
+              <div className="absolute bottom-12 left-12 w-3 h-3 border-l border-b border-neon-pink/50"></div>
+              <div className="absolute bottom-12 right-12 w-3 h-3 border-r border-b border-primary/50"></div>
 
-            {/* Data stream effects */}
-            <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-primary/0 via-primary/20 to-primary/0 animate-pulse"></div>
-            <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-neon-pink/0 via-neon-pink/20 to-neon-pink/0 animate-pulse" style={{animationDelay: '0.7s'}}></div>
+              {/* Data stream effects */}
+              <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-primary/0 via-primary/20 to-primary/0 animate-pulse"></div>
+              <div className="absolute top-0 right-1/3 w-px h-full bg-gradient-to-b from-neon-pink/0 via-neon-pink/20 to-neon-pink/0 animate-pulse" style={{animationDelay: '0.7s'}}></div>
 
-            {/* Animated border segments */}
-            <div className="absolute top-0 left-20 w-16 h-px bg-gradient-to-r from-transparent via-primary to-transparent animate-pulse"></div>
-            <div className="absolute bottom-0 right-20 w-16 h-px bg-gradient-to-r from-transparent via-neon-pink to-transparent animate-pulse" style={{animationDelay: '0.5s'}}></div>
+              {/* Animated border segments */}
+              <div className="absolute top-0 left-20 w-16 h-px bg-gradient-to-r from-transparent via-primary to-transparent animate-pulse"></div>
+              <div className="absolute bottom-0 right-20 w-16 h-px bg-gradient-to-r from-transparent via-neon-pink to-transparent animate-pulse" style={{animationDelay: '0.5s'}}></div>
 
-            {/* Content header with status */}
-            <div className="relative z-10 flex items-center justify-between mb-6 pb-4 border-b border-primary/20 shadow-[0_2px_10px_rgba(64,224,208,0.1)]">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-primary animate-pulse rounded-full shadow-[0_0_8px_rgba(64,224,208,0.8)]"></div>
-                <h3 className="text-primary text-sm font-headline uppercase font-code">
-                  [DOCUMENTATION // {docSections.find(s => s.id === activeSection)?.title.toUpperCase()}]
-                </h3>
+              {/* Content header with status */}
+              <div className="relative z-10 flex items-center justify-between mb-6 pb-4 border-b border-primary/20 shadow-[0_2px_10px_rgba(64,224,208,0.1)]">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-primary animate-pulse rounded-full shadow-[0_0_8px_rgba(64,224,208,0.8)]"></div>
+                  <h3 className="text-primary text-sm font-headline uppercase font-code">
+                    [DOCUMENTATION // {docSections.find(s => s.id === activeSection)?.title.toUpperCase()}]
+                  </h3>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 text-xs font-code text-secondary-accent border border-neon-pink/30 px-2 py-1">
+                    <div className="w-2 h-2 bg-neon-pink animate-pulse rounded-full shadow-[0_0_8px_rgba(255,0,110,0.8)]" />
+                    <span>ONLINE</span>
+                  </div>
+                  <div className="hidden sm:flex items-center gap-2 text-xs font-code text-secondary-accent border border-primary/30 px-2 py-1">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <span>SECURE</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
+
+              <div className="relative z-10 max-w-5xl mx-auto">
+                {loading ? (
+                  <div className="flex flex-col items-center justify-center py-12 gap-4">
+                    <div className="flex items-center gap-3 text-primary">
+                      <div className="w-3 h-3 bg-primary animate-pulse rounded-full" />
+                      <div className="w-3 h-3 bg-primary animate-pulse rounded-full" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-3 h-3 bg-primary animate-pulse rounded-full" style={{ animationDelay: '0.4s' }}></div>
+                    </div>
+                    <span className="font-code text-sm uppercase text-primary">LOADING DOCUMENTATION...</span>
+                  </div>
+                ) : (
+                  <article className="prose prose-invert max-w-none">
+                    {renderMarkdown(content)}
+                  </article>
+                )}
+              </div>
+
+              {/* Status indicator at bottom */}
+              <div className="relative z-10 mt-12 pt-6 border-t border-neon-pink/20 shadow-[0_-2px_10px_rgba(255,0,110,0.1)] flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-2 text-xs font-code text-secondary-accent border border-neon-pink/30 px-2 py-1">
                   <div className="w-2 h-2 bg-neon-pink animate-pulse rounded-full shadow-[0_0_8px_rgba(255,0,110,0.8)]" />
-                  <span>ONLINE</span>
+                  <span>SYNC STATUS: <span className="text-neon-pink">COMPLETE</span></span>
                 </div>
-                <div className="hidden sm:flex items-center gap-2 text-xs font-code text-secondary-accent border border-primary/30 px-2 py-1">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <span>SECURE</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative z-10 max-w-4xl">
-              {loading ? (
-                <div className="flex flex-col items-center justify-center py-12 gap-4">
-                  <div className="flex items-center gap-3 text-primary">
-                    <div className="w-3 h-3 bg-primary animate-pulse rounded-full" />
-                    <div className="w-3 h-3 bg-primary animate-pulse rounded-full" style={{ animationDelay: '0.2s' }}></div>
-                    <div className="w-3 h-3 bg-primary animate-pulse rounded-full" style={{ animationDelay: '0.4s' }}></div>
+                <div className="flex items-center gap-4">
+                  <div className="text-xs font-code text-secondary-accent border border-primary/30 px-2 py-1">
+                    PEER COUNT: <span className="text-primary">42</span>
                   </div>
-                  <span className="font-code text-sm uppercase text-primary">LOADING DOCUMENTATION...</span>
+                  <div className="hidden sm:flex items-center gap-2 text-xs font-code text-secondary-accent border border-primary/30 px-2 py-1">
+                    <div className="w-2 h-2 bg-primary animate-pulse rounded-full shadow-[0_0_8px_rgba(64,224,208,0.8)]"></div>
+                    <span>LATENCY: <span className="text-primary">12ms</span></span>
+                  </div>
                 </div>
-              ) : (
-                <article className="prose prose-invert max-w-none">
-                  {renderMarkdown(content)}
-                </article>
-              )}
+              </div>
             </div>
+          </main>
 
-            {/* Status indicator at bottom */}
-            <div className="relative z-10 mt-12 pt-6 border-t border-neon-pink/20 shadow-[0_-2px_10px_rgba(255,0,110,0.1)] flex items-center justify-between flex-wrap gap-4">
-              <div className="flex items-center gap-2 text-xs font-code text-secondary-accent border border-neon-pink/30 px-2 py-1">
-                <div className="w-2 h-2 bg-neon-pink animate-pulse rounded-full shadow-[0_0_8px_rgba(255,0,110,0.8)]" />
-                <span>SYNC STATUS: <span className="text-neon-pink">COMPLETE</span></span>
+          {/* --- RIGHT SIDEBAR (Desktop) --- */}
+          {/* --- RIGHT SIDEBAR (Desktop) --- */}
+          <div className="hidden lg:flex flex-col gap-8 sticky top-16 h-fit">
+              {/* Placeholder Image */}
+              <div className="bg-background-dark/95 backdrop-blur-sm border border-neon-pink/30 p-4 aspect-square rounded-lg relative group overflow-hidden">
+                  <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-neon-pink transition-all duration-300 group-hover:w-6 group-hover:h-6"></div>
+                  <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-neon-pink transition-all duration-300 group-hover:w-6 group-hover:h-6"></div>
+                  <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-neon-pink transition-all duration-300 group-hover:w-6 group-hover:h-6"></div>
+                  <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-neon-pink transition-all duration-300 group-hover:w-6 group-hover:h-6"></div>
+                  <img src="https://i.pinimg.com/564x/05/60/34/05603426e952219757e5e95b0f17e7a5.jpg" alt="Cyberpunk Aesthetic" className="w-full h-full object-cover rounded-sm grayscale group-hover:grayscale-0 transition-all duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-neon-pink/20 to-transparent"></div>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="text-xs font-code text-secondary-accent border border-primary/30 px-2 py-1">
-                  PEER COUNT: <span className="text-primary">42</span>
-                </div>
-                <div className="hidden sm:flex items-center gap-2 text-xs font-code text-secondary-accent border border-primary/30 px-2 py-1">
-                  <div className="w-2 h-2 bg-primary animate-pulse rounded-full shadow-[0_0_8px_rgba(64,224,208,0.8)]"></div>
-                  <span>LATENCY: <span className="text-primary">12ms</span></span>
-                </div>
+              {/* Digital Clock */}
+              <div className="bg-background-dark/95 backdrop-blur-sm border border-neon-pink/30 p-6 h-28 rounded-lg relative flex flex-col justify-center items-center">
+                  <div className="absolute top-1 left-1 w-3 h-3 border-l border-t border-neon-pink/50"></div>
+                  <div className="absolute top-1 right-1 w-3 h-3 border-r border-t border-neon-pink/50"></div>
+                  <div className="flex items-center gap-2 mb-2 absolute top-4 left-6">
+                      <div className="w-2 h-2 bg-neon-pink animate-pulse rounded-full"></div>
+                      <h3 className="text-neon-pink text-xs font-headline uppercase">[SYSTEM_TIME]</h3>
+                  </div>
+                  <p className="text-neon-pink font-code text-4xl tracking-widest">
+                      {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
+                  </p>
               </div>
-            </div>
           </div>
-        </main>
-      </div>
+
+          {/* --- MOBILE NAVIGATION --- */}
+          <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="lg:hidden fixed top-20 left-4 z-50 bg-background-dark border border-primary px-3 py-2 text-xs font-code uppercase text-primary hover:bg-primary/10 transition-colors"
+          >
+              {sidebarOpen ? "[CLOSE]" : "[MENU]"}
+          </button>
+          <aside
+              className={`${
+              sidebarOpen ? "translate-x-0" : "-translate-x-full"
+              } lg:hidden fixed top-0 left-0 h-full w-72 bg-background-dark/95 backdrop-blur-sm border-r border-primary/30 p-6 transition-transform duration-300 z-40 overflow-y-auto shadow-[0_0_30px_rgba(64,224,208,0.2)]`}
+          >
+              <NavigationContent />
+          </aside>
+        </div>
       </div>
 
       <Footer />
