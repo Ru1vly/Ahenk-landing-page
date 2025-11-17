@@ -4,19 +4,21 @@ import HyperText from "./hyper-text";
 
 const MainContent = () => {
   return (
-    <main className="grid grid-cols-6 grid-rows-6 h-full w-full gap-2 p-4 pt-16 pb-16 relative z-30">
-      <section className="col-span-3 row-span-2 bg-background-dark/80 border border-secondary-accent/30 p-4 flex flex-col justify-between relative overflow-hidden">
+    <main className="flex flex-col lg:grid lg:grid-cols-6 lg:grid-rows-6 min-h-screen lg:h-full w-full gap-4 p-4 pt-20 pb-20 relative z-30">
+      {/* Hero Section */}
+      <section className="w-full lg:col-span-3 lg:row-span-2 bg-background-dark/80 border border-secondary-accent/30 p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden min-h-[280px]">
         <div className="absolute inset-0 bg-gradient-to-br from-transparent via-primary/5 to-transparent z-0 opacity-10"></div>
-        <div className="relative z-10 flex flex-col h-full">
-          <h1 className="text-text-light text-3xl font-black leading-tight tracking-[-0.033em] md:text-4xl font-headline uppercase mb-2">
-            <span className="text-primary">[DISTRIBUTED SYNC]</span> // CONFLICT-FREE PROTOCOL
+        <div className="relative z-10 flex flex-col h-full justify-center">
+          <h1 className="text-text-light text-2xl sm:text-3xl lg:text-4xl font-black leading-tight tracking-[-0.033em] font-headline uppercase mb-3">
+            <span className="text-primary block mb-1">[DISTRIBUTED SYNC]</span>
+            <span className="text-sm sm:text-base lg:text-lg text-secondary-accent">CONFLICT-FREE PROTOCOL</span>
           </h1>
-          <p className="text-secondary-accent text-sm md:text-base mb-4 flex-grow">
+          <p className="text-secondary-accent text-sm sm:text-base mb-6 max-w-2xl">
             RUST-POWERED P2P • CRDT-BASED • OFFLINE-FIRST ARCHITECTURE.
-            <br />
+            <br className="hidden sm:block" />
             CROSS-PLATFORM DATABASE SYNCHRONIZATION.
           </p>
-          <div className="flex flex-col sm:flex-row items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <a href="https://github.com/Ru1vly/nexus-core" target="_blank" rel="noopener noreferrer" className="flex w-full sm:w-auto items-center justify-center h-10 px-4 bg-primary text-background-dark text-sm font-extrabold uppercase hover:opacity-90 transition-opacity border-none">
               <span className="truncate">VIEW ON GITHUB</span>
             </a>
@@ -26,8 +28,30 @@ const MainContent = () => {
           </div>
         </div>
       </section>
+
+      {/* Get Started CTA - Priority #2 on mobile */}
+      <section className="w-full order-last lg:order-none lg:col-span-4 lg:row-span-2 bg-background-dark/80 border border-primary/50 p-6 sm:p-8 flex flex-col justify-center items-center relative overflow-hidden min-h-[240px]">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary/10 z-0 opacity-20"></div>
+        <div className="relative z-10 text-center flex flex-col items-center gap-4 w-full max-w-lg">
+          <h2 className="text-text-light text-2xl sm:text-3xl font-black tracking-tighter font-headline uppercase">
+            <span className="text-primary">[INITIATE]</span> AHENK PROTOCOL
+          </h2>
+          <p className="max-w-xl text-secondary-accent text-sm sm:text-base font-bold">
+            BATTERIES-INCLUDED SYNC INFRASTRUCTURE.
+            <br />
+            CARGO ADD:{" "}
+            <span className="blinking-cursor">ahenk</span>
+          </p>
+          <Link href="/docs" className="flex min-w-[84px] w-full max-w-xs cursor-pointer items-center justify-center h-12 px-5 bg-primary text-background-dark text-base font-extrabold uppercase hover:opacity-90 transition-opacity border-none shadow-none">
+            <span className="truncate">GET STARTED</span>
+          </Link>
+        </div>
+      </section>
+
       <LiveTerminal />
-      <section className="col-span-3 row-span-2 bg-background-dark/80 border border-secondary-accent/30 p-4 flex flex-col justify-center items-center relative overflow-hidden">
+
+      {/* Network Map */}
+      <section className="w-full lg:col-span-3 lg:row-span-2 bg-background-dark/80 border border-secondary-accent/30 p-5 sm:p-6 flex flex-col justify-center items-center relative overflow-hidden min-h-[300px]">
         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-secondary-accent/5 to-transparent z-0 opacity-10"></div>
         <div className="relative w-full h-full flex flex-col justify-center items-center p-4 z-10">
           <div className="relative w-full h-full flex items-center justify-center border border-secondary-accent/40 bg-secondary-accent/5 overflow-hidden">
@@ -52,20 +76,24 @@ const MainContent = () => {
           </p>
         </div>
       </section>
-      <section className="col-span-3 row-span-1 bg-background-dark/80 border border-secondary-accent/30 p-4 flex flex-col justify-between relative overflow-hidden">
+
+      {/* Sync Status */}
+      <section className="w-full lg:col-span-3 lg:row-span-1 bg-background-dark/80 border border-secondary-accent/30 p-5 flex flex-col justify-center relative overflow-hidden min-h-[120px]">
         <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-primary/5 to-transparent z-0 opacity-10"></div>
         <div className="relative z-10">
-          <h2 className="text-text-light text-xl font-bold font-headline uppercase mb-1">
+          <h2 className="text-text-light text-lg sm:text-xl font-bold font-headline uppercase mb-2">
             SYNC STATUS: <span className="text-primary">CONVERGED</span>
           </h2>
-          <p className="text-secondary-accent text-sm">
+          <p className="text-secondary-accent text-sm sm:text-base">
             CROSS-PLATFORM SUPPORT: <span className="text-primary">iOS • ANDROID • DESKTOP • EMBEDDED</span>
           </p>
         </div>
       </section>
-      <section className="col-span-2 row-span-2 bg-background-dark/80 border border-neon-pink/30 p-4 flex flex-col gap-3 relative overflow-hidden">
+
+      {/* Credits */}
+      <section className="w-full lg:col-span-2 lg:row-span-2 bg-background-dark/80 border border-neon-pink/30 p-5 sm:p-6 flex flex-col gap-3 relative overflow-hidden min-h-[280px]">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-neon-pink/5 to-transparent z-0 opacity-10"></div>
-        <h2 className="text-text-light text-xl font-bold font-headline uppercase border-b border-neon-pink/20 pb-2 mb-2 relative z-10">
+        <h2 className="text-text-light text-lg sm:text-xl font-bold font-headline uppercase border-b border-neon-pink/20 pb-2 mb-2 relative z-10">
           CREDITS // SYSTEM
         </h2>
         <div className="relative z-10 flex flex-col gap-4 items-center justify-center flex-grow text-center">
@@ -108,23 +136,6 @@ const MainContent = () => {
               <span className="relative z-10 group-hover:text-background-dark transition-colors">BUY ME A COFFEE</span>
             </a>
           </div>
-        </div>
-      </section>
-      <section className="col-span-4 row-span-2 bg-background-dark/80 border border-primary/50 p-4 flex flex-col justify-center items-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary/10 z-0 opacity-20"></div>
-        <div className="relative z-10 text-center flex flex-col items-center gap-3 w-full max-w-lg">
-          <h2 className="text-text-light text-2xl md:text-3xl font-black tracking-tighter font-headline uppercase">
-            <span className="text-primary">[INITIATE]</span> AHENK PROTOCOL
-          </h2>
-          <p className="max-w-xl text-secondary-accent text-sm font-bold">
-            BATTERIES-INCLUDED SYNC INFRASTRUCTURE.
-            <br />
-            CARGO ADD:{" "}
-            <span className="blinking-cursor">ahenk</span>
-          </p>
-          <Link href="/docs" className="flex min-w-[84px] w-full max-w-xs cursor-pointer items-center justify-center h-12 px-5 bg-primary text-background-dark text-base font-extrabold uppercase hover:opacity-90 transition-opacity border-none shadow-none">
-            <span className="truncate">GET STARTED</span>
-          </Link>
         </div>
       </section>
     </main>

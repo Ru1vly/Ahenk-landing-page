@@ -13,7 +13,7 @@ export default function Home() {
     <>
       {isLoading && <LoadingScreen onLoadComplete={() => setIsLoading(false)} />}
 
-      <div className={`flex flex-col justify-between h-screen w-screen overflow-hidden transition-opacity duration-500 ${isLoading ? "opacity-0" : "opacity-100"}`}>
+      <div className={`flex flex-col justify-between min-h-screen lg:h-screen w-screen overflow-y-auto lg:overflow-hidden transition-opacity duration-500 ${isLoading ? "opacity-0" : "opacity-100"}`}>
         <div className="surveillance-grid-overlay"></div>
         <div className="scanlines fixed inset-0 z-20 pointer-events-none"></div>
         <div className="grainy-overlay"></div>

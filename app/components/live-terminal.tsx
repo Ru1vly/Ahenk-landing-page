@@ -12,6 +12,7 @@ interface LogEntry {
 
 const LiveTerminal = () => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [mounted, setMounted] = useState(false);
   const terminalRef = useRef<HTMLDivElement>(null);
   const logIdRef = useRef(0);
 
@@ -84,6 +85,7 @@ const LiveTerminal = () => {
   };
 
   useEffect(() => {
+    setMounted(true);
     addInitialLogs();
 
     const interval = setInterval(() => {
@@ -106,32 +108,38 @@ const LiveTerminal = () => {
   }, [logs]);
 
   return (
-    <section className="col-span-3 row-span-3 bg-background-dark/80 border border-secondary-accent/30 p-4 flex flex-col relative overflow-hidden">
+    <section className="w-full lg:col-span-3 lg:row-span-3 bg-background-dark/80 border border-secondary-accent/30 p-5 sm:p-6 flex flex-col relative overflow-hidden min-h-[350px] lg:min-h-[400px]">
       <div className="absolute inset-0 bg-gradient-to-tl from-transparent via-secondary-accent/5 to-transparent z-0 opacity-10"></div>
-      <div className="flex items-center gap-2 p-1 bg-primary/10 border-b border-primary/30 mb-2 relative z-10">
+      <div className="flex items-center gap-2 p-2 bg-primary/10 border-b border-primary/30 mb-3 relative z-10">
         <div className="w-2 h-2 bg-primary animate-pulse"></div>
         <div className="w-2 h-2 bg-primary"></div>
         <div className="w-2 h-2 bg-primary"></div>
-        <span className="text-xs text-primary ml-auto uppercase">
+        <span className="text-xs sm:text-sm text-primary ml-auto uppercase font-bold">
           STATUS::STREAM_ACTIVE
         </span>
       </div>
       <div
         ref={terminalRef}
-        className="flex-grow overflow-y-auto text-left font-code text-xs text-text-light/90 relative z-10 p-2 scroll-smooth"
+        className="flex-grow overflow-y-auto text-left font-code text-xs sm:text-sm text-text-light/90 relative z-10 p-2 sm:p-3 scroll-smooth"
       >
-        <pre>
-          <code className="language-bash">
-            {logs.map((log) => (
-              <span key={log.id}>
-                <span className={log.highlight ? "text-primary font-bold" : ""}>
-                  [{log.timestamp}] &lt;{log.level}&gt; {log.message}
+        {!mounted ? (
+          <div className="flex items-center justify-center h-full text-secondary-accent">
+            <span className="blinking-cursor">INITIALIZING...</span>
+          </div>
+        ) : (
+          <pre>
+            <code className="language-bash">
+              {logs.map((log) => (
+                <span key={log.id}>
+                  <span className={log.highlight ? "text-primary font-bold" : ""}>
+                    [{log.timestamp}] &lt;{log.level}&gt; {log.message}
+                  </span>
+                  <br />
                 </span>
-                <br />
-              </span>
-            ))}
-          </code>
-        </pre>
+              ))}
+            </code>
+          </pre>
+        )}
       </div>
     </section>
   );

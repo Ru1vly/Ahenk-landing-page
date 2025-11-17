@@ -18,8 +18,9 @@
 }
 
 html {
-  height: 100%;
+  min-height: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 body {
@@ -28,6 +29,7 @@ body {
   color: var(--stark-white);
   position: relative;
   min-height: 100%;
+  overflow-x: hidden;
 }
 
 .font-headline {
@@ -48,15 +50,32 @@ body {
   z-index: 10;
   background-image: linear-gradient(
       to right,
-      rgba(224, 224, 224, 0.05) 1px,
+      rgba(224, 224, 224, 0.04) 1px,
       transparent 1px
     ),
     linear-gradient(
       to bottom,
-      rgba(224, 224, 224, 0.05) 1px,
+      rgba(224, 224, 224, 0.04) 1px,
       transparent 1px
     );
-  background-size: 60px 60px;
+  background-size: 40px 40px;
+}
+
+/* Responsive grid sizes */
+@media (min-width: 1024px) {
+  .surveillance-grid-overlay {
+    background-size: 60px 60px;
+    background-image: linear-gradient(
+        to right,
+        rgba(224, 224, 224, 0.05) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom,
+        rgba(224, 224, 224, 0.05) 1px,
+        transparent 1px
+      );
+  }
 }
 
 .scanlines::before {
