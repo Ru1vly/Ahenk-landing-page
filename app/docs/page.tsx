@@ -25,7 +25,13 @@ import {
   Target,
   Shield,
   Lock,
-  Key
+  Key,
+  RefreshCw,
+  PhoneOff,
+  Smartphone,
+  Globe,
+  Settings,
+  XCircle
 } from "lucide-react";
 
 interface DocSection {
@@ -135,45 +141,69 @@ export default function DocsPage() {
         '🛡': <Shield className="w-5 h-5" />,
         '🔒': <Lock className="w-5 h-5" />,
         '🔑': <Key className="w-5 h-5" />,
+        '🔄': <RefreshCw className="w-5 h-5" />,
+        '📴': <PhoneOff className="w-5 h-5" />,
+        '🔐': <Lock className="w-5 h-5" />,
+        '📱': <Smartphone className="w-5 h-5" />,
+        '🌍': <Globe className="w-5 h-5" />,
+        '⚙️': <Settings className="w-5 h-5" />,
+        '⚙': <Settings className="w-5 h-5" />,
+        '❌': <XCircle className="w-5 h-5" />,
       };
       return iconMap[emoji] || <Info className="w-5 h-5" />;
     };
 
     const renderTextWithIcons = (text: string): (string | React.JSX.Element)[] => {
       // Remove shields.io badges
-      const cleaned = text
+      let cleaned = text
         .replace(/!\[.*?\]\(.*?shields\.io.*?\)/g, '')
         .replace(/!\[.*?\]\(.*?img\.shields\.io.*?\)/g, '')
         .replace(/\[!\[.*?\]\(.*?shields\.io.*?\)\]\(.*?\)/g, '');
 
       // List of emojis we support
-      const knownEmojis = ['💡', '⚠️', '⚠', 'ℹ️', 'ℹ', '✅', '✓', '⚡', '🚀', '💻', '📝', '🔧', '🗄️', '🗄', '🖥️', '🖥', '🌿', '📦', '❤️', '❤', '⭐', '✨', '🚩', '🎯', '🛡️', '🛡', '🔒', '🔑'];
+      const emojiPlaceholders: { marker: string; emoji: string }[] = [];
+      const emojiRegex = /(💡|⚠️|⚠|ℹ️|ℹ|✅|✓|⚡|🚀|💻|📝|🔧|🗄️|🗄|🖥️|🖥|🌿|📦|❤️|❤|⭐|✨|🚩|🎯|🛡️|🛡|🔒|🔑|🔄|📴|🔐|📱|🌍|⚙️|⚙|❌)/g;
 
-      // Emoji regex to match common emojis (used for splitting only)
-      const emojiRegex = /(💡|⚠️|⚠|ℹ️|ℹ|✅|✓|⚡|🚀|💻|📝|🔧|🗄️|🗄|🖥️|🖥|🌿|📦|❤️|❤|⭐|✨|🚩|🎯|🛡️|🛡|🔒|🔑)/g;
-      const parts = cleaned.split(emojiRegex);
+      // Step 1: Replace known emojis with HTML comment markers (won't break HTML structure)
+      let withMarkers = cleaned.replace(emojiRegex, (match) => {
+        const marker = `<!--EMOJI${emojiPlaceholders.length}-->`;
+        emojiPlaceholders.push({ marker, emoji: match });
+        return marker;
+      });
+
+      // Step 2: Remove all other unknown emojis
+      withMarkers = withMarkers.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F000}-\u{1F02F}\u{1F0A0}-\u{1F0FF}\u{1F100}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{FE00}-\u{FE0F}\u{200D}]/gu, '');
+
+      // Step 3: Apply markdown formatting (bold, italic, links, code)
+      const formatted = withMarkers
+        // Links
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-neon-pink underline transition-colors">$1</a>')
+        // Bold - using inline styles for guaranteed rendering
+        .replace(/\*\*([^*]+)\*\*/g, '<strong style="color: #40e0d0; font-weight: 700;">$1</strong>')
+        // Italic
+        .replace(/\*([^*]+)\*/g, '<em class="text-secondary-accent italic">$1</em>')
+        // Inline code
+        .replace(/`([^`]+)`/g, '<code class="bg-primary/10 text-primary px-1.5 py-0.5 rounded font-code text-sm border border-primary/20">$1</code>');
+
+      // Step 4: Split by comment markers (safe - won't break HTML tags)
+      if (emojiPlaceholders.length === 0) {
+        return [formatted];
+      }
+
+      const markerRegex = new RegExp(`(${emojiPlaceholders.map(ep => ep.marker.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'g');
+      const parts = formatted.split(markerRegex);
 
       return parts.map((part, idx) => {
-        // Check if this part is an emoji by checking if it's in our known list
-        if (knownEmojis.includes(part)) {
-          return <span key={`icon-${idx}`} className="inline-flex items-center text-primary mx-0.5">{getIconForEmoji(part)}</span>;
+        // Check if this part is a marker
+        const emojiPlaceholder = emojiPlaceholders.find(ep => ep.marker === part);
+        if (emojiPlaceholder) {
+          return <span key={`icon-${idx}`} className="inline-flex items-center text-primary mx-0.5">{getIconForEmoji(emojiPlaceholder.emoji)}</span>;
         }
 
         // Skip empty parts
         if (!part) return '';
 
-        // Format the text part
-        const formatted = part
-          // Links
-          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-neon-pink underline transition-colors">$1</a>')
-          // Bold
-          .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-primary font-bold">$1</strong>')
-          // Italic
-          .replace(/\*([^*]+)\*/g, '<em class="text-secondary-accent italic">$1</em>')
-          // Inline code
-          .replace(/`([^`]+)`/g, '<code class="bg-primary/10 text-primary px-1.5 py-0.5 rounded font-code text-sm border border-primary/20">$1</code>');
-
-        return formatted;
+        return <span key={idx} dangerouslySetInnerHTML={{ __html: part }} />;
       });
     };
 
@@ -184,14 +214,14 @@ export default function DocsPage() {
         .replace(/!\[.*?\]\(.*?shields\.io.*?\)/g, '')
         .replace(/!\[.*?\]\(.*?img\.shields\.io.*?\)/g, '')
         .replace(/\[!\[.*?\]\(.*?shields\.io.*?\)\]\(.*?\)/g, '')
-        // Remove emojis (will be handled separately)
-        .replace(/(💡|⚠️|⚠|ℹ️|ℹ|✅|✓|⚡|🚀|💻|📝|🔧|🗄️|🗄|🖥️|🖥|🌿|📦|❤️|❤|⭐|✨|🚩|🎯|🛡️|🛡|🔒|🔑)/g, '');
+        // Remove all emojis (comprehensive emoji regex covering all emoji ranges)
+        .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F000}-\u{1F02F}\u{1F0A0}-\u{1F0FF}\u{1F100}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{FE00}-\u{FE0F}\u{200D}]/gu, '');
 
       return formatted
         // Links
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-neon-pink underline transition-colors">$1</a>')
-        // Bold
-        .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-primary font-bold">$1</strong>')
+        // Bold - using inline styles for guaranteed rendering
+        .replace(/\*\*([^*]+)\*\*/g, '<strong style="color: #40e0d0; font-weight: 700;">$1</strong>')
         // Italic
         .replace(/\*([^*]+)\*/g, '<em class="text-secondary-accent italic">$1</em>')
         // Inline code
@@ -281,13 +311,59 @@ export default function DocsPage() {
 
       // Headers
       if (line.startsWith('#### ')) {
-        html.push(<h4 key={index} className="text-primary text-lg font-headline uppercase mt-5 mb-2 flex items-center gap-2"><span className="text-neon-pink">▸</span>{line.replace('#### ', '')}</h4>);
+        const headerText = line.replace('#### ', '');
+        const parts = renderTextWithIcons(headerText);
+        html.push(
+          <h4 key={index} className="text-primary text-lg font-headline uppercase mt-5 mb-2 flex items-center gap-2">
+            <span className="text-neon-pink">▸</span>
+            <span className="flex items-center gap-1">
+              {parts.map((part, i) =>
+                typeof part === 'string' ?
+                  <span key={i} dangerouslySetInnerHTML={{ __html: part }} /> :
+                  part
+              )}
+            </span>
+          </h4>
+        );
       } else if (line.startsWith('### ')) {
-        html.push(<h3 key={index} className="text-primary text-xl font-headline uppercase mt-6 mb-3 flex items-center gap-2"><span className="text-neon-pink">■</span>{line.replace('### ', '')}</h3>);
+        const headerText = line.replace('### ', '');
+        const parts = renderTextWithIcons(headerText);
+        html.push(
+          <h3 key={index} className="text-primary text-xl font-headline uppercase mt-6 mb-3 flex items-center gap-2">
+            <span className="text-neon-pink">■</span>
+            <span className="flex items-center gap-1">
+              {parts.map((part, i) =>
+                typeof part === 'string' ?
+                  <span key={i} dangerouslySetInnerHTML={{ __html: part }} /> :
+                  part
+              )}
+            </span>
+          </h3>
+        );
       } else if (line.startsWith('## ')) {
-        html.push(<h2 key={index} className="text-primary text-2xl font-headline uppercase mt-8 mb-4 border-b-2 border-primary/30 pb-3 shadow-[0_2px_10px_rgba(64,224,208,0.1)]">{line.replace('## ', '')}</h2>);
+        const headerText = line.replace('## ', '');
+        const parts = renderTextWithIcons(headerText);
+        html.push(
+          <h2 key={index} className="text-primary text-2xl font-headline uppercase mt-8 mb-4 border-b-2 border-primary/30 pb-3 shadow-[0_2px_10px_rgba(64,224,208,0.1)] flex items-center gap-2">
+            {parts.map((part, i) =>
+              typeof part === 'string' ?
+                <span key={i} dangerouslySetInnerHTML={{ __html: part }} /> :
+                part
+            )}
+          </h2>
+        );
       } else if (line.startsWith('# ')) {
-        html.push(<h1 key={index} className="text-primary text-3xl font-headline uppercase mt-4 mb-6 pb-4 border-b-2 border-neon-pink/30">{line.replace('# ', '')}</h1>);
+        const headerText = line.replace('# ', '');
+        const parts = renderTextWithIcons(headerText);
+        html.push(
+          <h1 key={index} className="text-primary text-3xl font-headline uppercase mt-4 mb-6 pb-4 border-b-2 border-neon-pink/30 flex items-center gap-2">
+            {parts.map((part, i) =>
+              typeof part === 'string' ?
+                <span key={i} dangerouslySetInnerHTML={{ __html: part }} /> :
+                part
+            )}
+          </h1>
+        );
       }
       // Lists
       else if (line.match(/^(\s*)[-*] /)) {
