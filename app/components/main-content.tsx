@@ -4,9 +4,9 @@ import HyperText from "./hyper-text";
 
 const MainContent = () => {
   return (
-    <main className="flex flex-col lg:grid lg:grid-cols-6 lg:grid-rows-6 min-h-screen lg:h-full w-full gap-4 p-4 pt-20 pb-20 relative z-30">
+    <main className="flex flex-col lg:grid lg:grid-cols-2 lg:grid-rows-3 min-h-screen lg:h-full lg:flex-1 w-full gap-4 p-4 pt-20 pb-20 lg:p-4 relative z-30">
       {/* Hero Section */}
-      <section className="w-full lg:col-span-3 lg:row-span-2 bg-background-dark/80 border border-secondary-accent/30 p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden min-h-[280px]">
+      <section className="w-full lg:col-span-1 lg:row-span-1 lg:col-start-1 lg:row-start-1 bg-background-dark/80 border border-secondary-accent/30 p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden min-h-[280px] lg:min-h-0 lg:h-full">
         <div className="absolute inset-0 bg-gradient-to-br from-transparent via-primary/5 to-transparent z-0 opacity-10"></div>
         <div className="relative z-10 flex flex-col h-full justify-center">
           <h1 className="text-text-light text-2xl sm:text-3xl lg:text-4xl font-black leading-tight tracking-[-0.033em] font-headline uppercase mb-3">
@@ -30,7 +30,7 @@ const MainContent = () => {
       </section>
 
       {/* Get Started CTA - Priority #2 on mobile */}
-      <section className="w-full order-last lg:order-none lg:col-span-4 lg:row-span-2 bg-background-dark/80 border border-primary/50 p-6 sm:p-8 flex flex-col justify-center items-center relative overflow-hidden min-h-[240px]">
+      <section className="w-full order-last lg:order-none lg:col-span-1 lg:row-span-1 lg:col-start-2 lg:row-start-3 bg-background-dark/80 border border-primary/50 p-6 sm:p-8 flex flex-col justify-center items-center relative overflow-hidden min-h-[240px] lg:min-h-0 lg:h-full">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary/10 z-0 opacity-20"></div>
         <div className="relative z-10 text-center flex flex-col items-center gap-4 w-full max-w-lg">
           <h2 className="text-text-light text-2xl sm:text-3xl font-black tracking-tighter font-headline uppercase">
@@ -51,7 +51,7 @@ const MainContent = () => {
       <LiveTerminal />
 
       {/* Network Map */}
-      <section className="w-full lg:col-span-3 lg:row-span-2 bg-background-dark/80 border border-secondary-accent/30 p-5 sm:p-6 flex flex-col justify-center items-center relative overflow-hidden min-h-[300px]">
+      <section className="w-full lg:col-span-1 lg:row-span-1 lg:col-start-1 lg:row-start-2 bg-background-dark/80 border border-secondary-accent/30 p-5 sm:p-6 flex flex-col justify-center items-center relative overflow-hidden min-h-[300px] lg:min-h-0 lg:h-full">
         <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-secondary-accent/5 to-transparent z-0 opacity-10"></div>
         <div className="relative w-full h-full flex flex-col justify-center items-center p-4 z-10">
           <div className="relative w-full h-full flex items-center justify-center border border-secondary-accent/40 bg-secondary-accent/5 overflow-hidden">
@@ -78,7 +78,7 @@ const MainContent = () => {
       </section>
 
       {/* Sync Status */}
-      <section className="w-full lg:col-span-3 lg:row-span-1 bg-background-dark/80 border border-secondary-accent/30 p-5 flex flex-col justify-center relative overflow-hidden min-h-[120px]">
+      <section className="w-full lg:col-span-1 lg:row-span-1 lg:col-start-2 lg:row-start-2 bg-background-dark/80 border border-secondary-accent/30 p-5 flex flex-col justify-center relative overflow-hidden min-h-[120px] lg:min-h-0 lg:h-full">
         <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-primary/5 to-transparent z-0 opacity-10"></div>
         <div className="relative z-10">
           <h2 className="text-text-light text-lg sm:text-xl font-bold font-headline uppercase mb-2">
@@ -91,7 +91,7 @@ const MainContent = () => {
       </section>
 
       {/* Credits */}
-      <section className="w-full lg:col-span-2 lg:row-span-2 bg-background-dark/80 border border-neon-pink/30 p-5 sm:p-6 flex flex-col gap-3 relative overflow-hidden min-h-[280px]">
+      <section className="w-full lg:col-span-1 lg:row-span-1 lg:col-start-1 lg:row-start-3 bg-background-dark/80 border border-neon-pink/30 p-5 sm:p-6 flex flex-col gap-3 relative overflow-hidden min-h-[280px] lg:min-h-0 lg:h-full">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-neon-pink/5 to-transparent z-0 opacity-10"></div>
         <h2 className="text-text-light text-lg sm:text-xl font-bold font-headline uppercase border-b border-neon-pink/20 pb-2 mb-2 relative z-10">
           CREDITS // SYSTEM

@@ -439,7 +439,7 @@ export default function DocsPage() {
             [NAVIGATION]
           </h2>
         </div>
-        <nav className="flex flex-wrap gap-2">
+        <nav className="flex flex-col gap-2">
           {docSections.map((section) => (
             <button
               key={section.id}
@@ -449,7 +449,7 @@ export default function DocsPage() {
                   setSidebarOpen(false);
                 }
               }}
-              className={`flex-grow text-center px-3 py-2 font-code text-sm uppercase transition-all duration-200 border ${
+              className={`w-full text-left px-4 py-3 font-code text-sm uppercase transition-all duration-200 border ${
                 activeSection === section.id
                   ? "bg-primary/20 text-primary border-primary shadow-[0_0_10px_rgba(64,224,208,0.3)]"
                   : "text-text-light bg-background-dark/50 hover:bg-primary/10 hover:text-primary border-primary/20 hover:border-primary/50"
@@ -467,12 +467,12 @@ export default function DocsPage() {
               [QUICK LINKS]
             </h3>
           </div>
-          <div className="flex flex-wrap gap-x-4 gap-y-2">
+          <div className="flex flex-col gap-2">
             <a
               href="https://github.com/Ru1vly/nexus-core"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-secondary-accent hover:text-primary text-xs font-code transition-colors group"
+              className="w-full flex items-center gap-2 text-secondary-accent hover:text-primary text-xs font-code transition-colors group px-4 py-2 border border-primary/20 hover:border-primary/50 bg-background-dark/50 hover:bg-primary/10"
             >
               <span className="text-primary group-hover:translate-x-1 transition-transform">→</span>
               <span>GITHUB REPO</span>
@@ -481,7 +481,7 @@ export default function DocsPage() {
               href="https://github.com/Ru1vly/nexus-core/issues"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-secondary-accent hover:text-primary text-xs font-code transition-colors group"
+              className="w-full flex items-center gap-2 text-secondary-accent hover:text-primary text-xs font-code transition-colors group px-4 py-2 border border-neon-pink/20 hover:border-neon-pink/50 bg-background-dark/50 hover:bg-neon-pink/10"
             >
               <span className="text-neon-pink group-hover:translate-x-1 transition-transform">→</span>
               <span>REPORT ISSUE</span>
@@ -527,16 +527,17 @@ export default function DocsPage() {
 
       <Header />
 
-      <div className="pt-16 pb-12 px-4 relative z-30 min-h-screen">
-        <div className="max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-8 relative min-h-[calc(100vh-7rem)]">
+      <div className="pt-16 pb-12 px-4 md:px-6 lg:px-8 relative z-30 min-h-screen">
+        <div className="mx-auto grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-8 relative min-h-[calc(100vh-7rem)]">
           {/* --- LEFT SIDEBAR (Desktop) --- */}
-          <div className="hidden lg:flex flex-col gap-8 sticky top-16 h-fit">
-            <aside className="bg-background-dark/95 backdrop-blur-sm border border-primary/30 p-6 shadow-[0_0_30px_rgba(64,224,208,0.2)] rounded-lg relative">
+          <div className="hidden lg:block sticky top-16 h-fit max-h-[calc(100vh-4rem)] overflow-y-auto">
+            <div className="flex flex-col gap-8 pb-4">
+              <aside className="bg-background-dark/95 backdrop-blur-sm border border-primary/30 p-6 shadow-[0_0_30px_rgba(64,224,208,0.2)] relative">
               <NavigationContent />
             </aside>
             {/* Back to Home Button */}
             <Link href="/" className="block">
-                <div className="group relative bg-background-dark/95 backdrop-blur-sm border border-neon-pink/30 p-6 h-28 rounded-lg flex items-center justify-center text-center transition-all duration-300 hover:border-neon-pink hover:shadow-[0_0_20px_rgba(255,0,110,0.5)]">
+                <div className="group relative bg-background-dark/95 backdrop-blur-sm border border-neon-pink/30 p-6 h-28 flex items-center justify-center text-center transition-all duration-300 hover:border-neon-pink hover:shadow-[0_0_20px_rgba(255,0,110,0.5)]">
                     <div className="absolute top-1 left-1 w-3 h-3 border-l border-t border-neon-pink/50 group-hover:border-neon-pink"></div>
                     <div className="absolute top-1 right-1 w-3 h-3 border-r border-t border-neon-pink/50 group-hover:border-neon-pink"></div>
                     <div className="absolute bottom-1 left-1 w-3 h-3 border-l border-b border-neon-pink/50 group-hover:border-neon-pink"></div>
@@ -547,7 +548,7 @@ export default function DocsPage() {
                 </div>
             </Link>
             {/* Reading Progress Indicator */}
-            <div className="bg-background-dark/95 backdrop-blur-sm border border-primary/30 p-6 h-28 rounded-lg relative">
+            <div className="bg-background-dark/95 backdrop-blur-sm border border-primary/30 p-6 h-28 relative">
                 <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-primary"></div>
                 <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-primary"></div>
                 <div className="flex items-center gap-2 mb-2">
@@ -558,6 +559,7 @@ export default function DocsPage() {
                     <div className="bg-primary h-full transition-all duration-200" style={{ width: `${scrollProgress}%` }}></div>
                 </div>
                 <p className="text-right font-code text-primary text-xl mt-2">{Math.round(scrollProgress)}%</p>
+            </div>
             </div>
           </div>
 
@@ -647,18 +649,19 @@ export default function DocsPage() {
 
           {/* --- RIGHT SIDEBAR (Desktop) --- */}
           {/* --- RIGHT SIDEBAR (Desktop) --- */}
-          <div className="hidden lg:flex flex-col gap-8 sticky top-16 h-fit">
+          <div className="hidden lg:block sticky top-16 h-fit max-h-[calc(100vh-4rem)] overflow-y-auto">
+            <div className="flex flex-col gap-8 pb-4">
               {/* Placeholder Image */}
-              <div className="bg-background-dark/95 backdrop-blur-sm border border-neon-pink/30 p-4 aspect-square rounded-lg relative group overflow-hidden">
+              <div className="bg-background-dark/95 backdrop-blur-sm border border-neon-pink/30 p-4 h-[400px] relative group overflow-hidden flex items-center justify-center">
                   <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-neon-pink transition-all duration-300 group-hover:w-6 group-hover:h-6"></div>
                   <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-neon-pink transition-all duration-300 group-hover:w-6 group-hover:h-6"></div>
                   <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-neon-pink transition-all duration-300 group-hover:w-6 group-hover:h-6"></div>
                   <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-neon-pink transition-all duration-300 group-hover:w-6 group-hover:h-6"></div>
-                  <img src="https://i.pinimg.com/564x/05/60/34/05603426e952219757e5e95b0f17e7a5.jpg" alt="Cyberpunk Aesthetic" className="w-full h-full object-cover rounded-sm grayscale group-hover:grayscale-0 transition-all duration-300" />
+                  <img src="https://i.pinimg.com/564x/05/60/34/05603426e952219757e5e95b0f17e7a5.jpg" alt="Cyberpunk Aesthetic" className="w-full h-full object-cover object-center grayscale group-hover:grayscale-0 transition-all duration-300" />
                   <div className="absolute inset-0 bg-gradient-to-t from-neon-pink/20 to-transparent"></div>
               </div>
               {/* Digital Clock */}
-              <div className="bg-background-dark/95 backdrop-blur-sm border border-neon-pink/30 p-6 h-28 rounded-lg relative flex flex-col justify-center items-center">
+              <div className="bg-background-dark/95 backdrop-blur-sm border border-neon-pink/30 p-6 h-28 relative flex flex-col justify-center items-center">
                   <div className="absolute top-1 left-1 w-3 h-3 border-l border-t border-neon-pink/50"></div>
                   <div className="absolute top-1 right-1 w-3 h-3 border-r border-t border-neon-pink/50"></div>
                   <div className="flex items-center gap-2 mb-2 absolute top-4 left-6">
@@ -669,6 +672,7 @@ export default function DocsPage() {
                       {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
                   </p>
               </div>
+            </div>
           </div>
 
           {/* --- MOBILE NAVIGATION --- */}
