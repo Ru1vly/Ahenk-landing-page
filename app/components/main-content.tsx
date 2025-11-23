@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import LiveTerminal from "./live-terminal";
 import HyperText from "./hyper-text";
 
@@ -36,10 +37,11 @@ const MainContent = () => {
           <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-secondary-accent/5 to-transparent z-0 opacity-10"></div>
           <div className="relative w-full h-full flex flex-col justify-center items-center p-2 z-10">
             <div className="relative w-full h-full flex items-center justify-center border border-secondary-accent/40 bg-secondary-accent/5 overflow-hidden">
-              <img
+              <Image
                 alt="Low-res camera feed"
-                className="w-full h-full object-cover grayscale opacity-80"
+                className="object-cover grayscale opacity-80"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5kzYqdHRwl2_0b9GA7WFMxBWtel8Az9Ks7qtznbUvCfbYyr8xO5jjb5woHTYuhzQc0uma66hokyjrBcSHOsQ3ZO0fI6XYdabypfaBv8NC40fyeaAqAy0xhcBsMEJLuFar2ms1UVVtGZwcs-uQeaorvKlBPd9cB4o9CCMol4rvFUIDE5ZRqe7RTL2MRtOVdO2lIFJjoh88AzR47oD0rddq_DfAfhIxQtmCK89nkxeR11LedilEUfc3iyjEa9M48IIzISaa46bWpCz8"
+                fill
               />
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-20 h-20 border-2 border-primary absolute top-1/4 left-1/4 animate-pulse"></div>

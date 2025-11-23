@@ -24,7 +24,7 @@ html {
 }
 
 body {
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--font-ibm-plex-mono), monospace;
   background-color: var(--deep-black);
   color: var(--stark-white);
   position: relative;
@@ -33,11 +33,11 @@ body {
 }
 
 .font-headline {
-  font-family: "Oswald", sans-serif;
+  font-family: var(--font-oswald), sans-serif;
 }
 
 .font-code {
-  font-family: "IBM Plex Mono", monospace;
+  font-family: var(--font-ibm-plex-mono), monospace;
 }
 
 .surveillance-grid-overlay {

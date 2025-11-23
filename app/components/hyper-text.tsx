@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 interface HyperTextProps {
   text: string;
@@ -23,7 +23,7 @@ const HyperText = ({
 
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
 
-  const scramble = () => {
+  const scramble = useCallback(() => {
     let iteration = 0;
 
     const interval = setInterval(() => {
@@ -45,12 +45,12 @@ const HyperText = ({
 
       iteration += 1 / 3;
     }, duration);
-  };
+  }, [text, duration]);
 
   useEffect(() => {
     // Animate on mount
     scramble();
-  }, []);
+  }, [scramble]);
 
   const content = (
     <span

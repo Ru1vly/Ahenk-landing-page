@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 interface LogEntry {
   id: number;
@@ -9,6 +9,28 @@ interface LogEntry {
   message: string;
   highlight?: boolean;
 }
+
+const logTemplates = [
+  { level: "MDNS", message: "Discovered peer: {device} ({peer})", highlight: false },
+  { level: "LIBP2P", message: "Connected to /ip4/{ip}/tcp/4001", highlight: false },
+  { level: "SYNC", message: "Received {count} operations from {device}", highlight: false },
+  { level: "OPLOG", message: "Processing operation 0x{hex} ({action} {table})", highlight: false },
+  { level: "CRDT", message: "HLC timestamp: {timestamp}", highlight: false },
+  { level: "AUTH", message: "✓ Device {device} authenticated", highlight: false },
+  { level: "SYNC", message: "✓ Sent to {device} (200 OK)", highlight: false },
+  { level: "HEALTH", message: "Active peers: {peers} | Pending ops: {ops} | DB size: {size}MB", highlight: false },
+  { level: "CRDT", message: "CONFLICT: Concurrent updates detected", highlight: true },
+  { level: "CRDT", message: "✓ Causal order verified, applying local update", highlight: false },
+  { level: "SYNC", message: "✓ Sync complete. Network latency: {latency}ms avg", highlight: true },
+  { level: "DB", message: "Committed {count} operations to local database", highlight: false },
+  { level: "RELAY", message: "Connected to relay /ip4/{ip}/tcp/4001", highlight: false },
+  { level: "SYSTEM", message: "All peers converged. State synchronized.", highlight: true },
+  { level: "OPLOG", message: "New local operation: {action} INTO {table}...", highlight: false },
+];
+
+const devices = ["alice-laptop", "bob-phone", "charlie-tablet", "dave-desktop", "eve-watch"];
+const actions = ["INSERT", "UPDATE", "DELETE", "SELECT"];
+const tables = ["users", "messages", "devices", "sync_state", "operation_log"];
 
 const LiveTerminal = () => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -21,29 +43,7 @@ const LiveTerminal = () => {
     return now.toTimeString().split(" ")[0]; // HH:MM:SS
   };
 
-  const logTemplates = [
-    { level: "MDNS", message: "Discovered peer: {device} ({peer})", highlight: false },
-    { level: "LIBP2P", message: "Connected to /ip4/{ip}/tcp/4001", highlight: false },
-    { level: "SYNC", message: "Received {count} operations from {device}", highlight: false },
-    { level: "OPLOG", message: "Processing operation 0x{hex} ({action} {table})", highlight: false },
-    { level: "CRDT", message: "HLC timestamp: {timestamp}", highlight: false },
-    { level: "AUTH", message: "✓ Device {device} authenticated", highlight: false },
-    { level: "SYNC", message: "✓ Sent to {device} (200 OK)", highlight: false },
-    { level: "HEALTH", message: "Active peers: {peers} | Pending ops: {ops} | DB size: {size}MB", highlight: false },
-    { level: "CRDT", message: "CONFLICT: Concurrent updates detected", highlight: true },
-    { level: "CRDT", message: "✓ Causal order verified, applying local update", highlight: false },
-    { level: "SYNC", message: "✓ Sync complete. Network latency: {latency}ms avg", highlight: true },
-    { level: "DB", message: "Committed {count} operations to local database", highlight: false },
-    { level: "RELAY", message: "Connected to relay /ip4/{ip}/tcp/4001", highlight: false },
-    { level: "SYSTEM", message: "All peers converged. State synchronized.", highlight: true },
-    { level: "OPLOG", message: "New local operation: {action} INTO {table}...", highlight: false },
-  ];
-
-  const devices = ["alice-laptop", "bob-phone", "charlie-tablet", "dave-desktop", "eve-watch"];
-  const actions = ["INSERT", "UPDATE", "DELETE", "SELECT"];
-  const tables = ["users", "messages", "devices", "sync_state", "operation_log"];
-
-  const generateLog = (): LogEntry => {
+  const generateLog = useCallback((): LogEntry => {
     const template = logTemplates[Math.floor(Math.random() * logTemplates.length)];
     let message = template.message;
 
@@ -68,9 +68,9 @@ const LiveTerminal = () => {
       message: message,
       highlight: template.highlight,
     };
-  };
+  }, []);
 
-  const addInitialLogs = () => {
+  const addInitialLogs = useCallback(() => {
     const initialLogs: LogEntry[] = [
       { id: logIdRef.current++, timestamp: getTimestamp(), level: "DAEMON", message: "ahenk-cli v0.1.0 starting...", highlight: false },
       { id: logIdRef.current++, timestamp: getTimestamp(), level: "DB", message: "SQLite database initialized at ~/.ahenk/data.db", highlight: false },
@@ -82,7 +82,7 @@ const LiveTerminal = () => {
       { id: logIdRef.current++, timestamp: getTimestamp(), level: "MDNS", message: "mDNS discovery service started", highlight: false },
     ];
     setLogs(initialLogs);
-  };
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -98,7 +98,7 @@ const LiveTerminal = () => {
     }, 2000); // Add new log every 2 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [addInitialLogs, generateLog]);
 
   useEffect(() => {
     // Auto-scroll to bottom when new logs are added

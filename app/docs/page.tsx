@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import {
@@ -155,7 +156,7 @@ export default function DocsPage() {
 
     const renderTextWithIcons = (text: string): (string | React.JSX.Element)[] => {
       // Remove shields.io badges
-      let cleaned = text
+      const cleaned = text
         .replace(/!\[.*?\]\(.*?shields\.io.*?\)/g, '')
         .replace(/!\[.*?\]\(.*?img\.shields\.io.*?\)/g, '')
         .replace(/\[!\[.*?\]\(.*?shields\.io.*?\)\]\(.*?\)/g, '');
@@ -657,7 +658,7 @@ export default function DocsPage() {
                   <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-neon-pink transition-all duration-300 group-hover:w-6 group-hover:h-6"></div>
                   <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-neon-pink transition-all duration-300 group-hover:w-6 group-hover:h-6"></div>
                   <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-neon-pink transition-all duration-300 group-hover:w-6 group-hover:h-6"></div>
-                  <img src="https://i.pinimg.com/564x/05/60/34/05603426e952219757e5e95b0f17e7a5.jpg" alt="Cyberpunk Aesthetic" className="w-full h-full object-cover object-center grayscale group-hover:grayscale-0 transition-all duration-300" />
+                  <Image src="https://i.pinimg.com/564x/05/60/34/05603426e952219757e5e95b0f17e7a5.jpg" alt="Cyberpunk Aesthetic" className="object-cover object-center grayscale group-hover:grayscale-0 transition-all duration-300" fill />
                   <div className="absolute inset-0 bg-gradient-to-t from-neon-pink/20 to-transparent"></div>
               </div>
               {/* Digital Clock */}

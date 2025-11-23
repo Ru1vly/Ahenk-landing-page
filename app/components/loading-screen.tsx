@@ -79,7 +79,7 @@ const LoadingScreen = ({ onLoadComplete }: { onLoadComplete: () => void }) => {
       clearInterval(tipInterval);
       clearInterval(glitchInterval);
     };
-  }, []);
+  }, [onLoadComplete, tips.length]);
 
   return (
     <div className="fixed inset-0 z-[9999] bg-background-dark flex items-center justify-center overflow-hidden">
